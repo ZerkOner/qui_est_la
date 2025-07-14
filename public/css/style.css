@@ -1,0 +1,26 @@
+/* style.css */
+
+tr.bg-entree {
+  background-color: #d4edda; /* vert clair */
+  color: #155724; /* vert foncé */
+}
+
+tr.bg-sortie {
+  background-color: #f8d7da; /* rouge clair */
+  color: #721c24; /* rouge foncé */
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+}
+
+th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
