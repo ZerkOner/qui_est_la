@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="../public/css/style.css" />
+<link rel="stylesheet" href="/qui_est_la/public/css/style.css" />
 <?php
 session_start();
 if (!isset($_SESSION['admin_id'])) {
@@ -9,18 +9,17 @@ if (!isset($_SESSION['admin_id'])) {
 require_once '../includes/db.php';
 require_once '../includes/header.php';
 
-// Récupération des filtres depuis formulaire
+// Récupération des filtres
 $type_personne = $_GET['type_personne'] ?? 'tous';
 $type_action = $_GET['type_action'] ?? 'toutes';
 
-// Construction dynamique des conditions SQL
 $conditions = [];
 $params = [];
 
 if ($type_personne === 'formateur') {
-    $conditions[] = "p.personnel_id IS NOT NULL";
+    $conditions[] = "p.formation_id IS NOT NULL";
 } elseif ($type_personne === 'visiteur') {
-    $conditions[] = "p.personnel_id IS NULL AND p.formation_id IS NULL";
+    $conditions[] = "p.personnel_id IS NOT NULL AND p.formation_id IS NULL";
 }
 
 if ($type_action === 'entrée' || $type_action === 'sortie') {
@@ -35,7 +34,7 @@ $where_clause = count($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : 
 
 <!-- Formulaire de filtre -->
 <form method="get" action="pointages.php" style="margin-bottom: 20px;">
-  <label for="type_personne">Type de personne :</label>
+  <label for="type_personne">Motif :</label>
   <select name="type_personne" id="type_personne">
     <option value="tous" <?= $type_personne === 'tous' ? 'selected' : '' ?>>Tous</option>
     <option value="formateur" <?= $type_personne === 'formateur' ? 'selected' : '' ?>>En formation</option>
@@ -52,8 +51,15 @@ $where_clause = count($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : 
   <button type="submit" style="margin-left: 20px;">Filtrer</button>
 </form>
 
-<!-- Tableau des pointages -->
-<table border="1" cellpadding="5">
+<!-- Export CSV -->
+<form method="get" action="export_csv.php" style="margin-bottom: 20px;">
+  <input type="hidden" name="type_personne" value="<?= htmlspecialchars($type_personne) ?>">
+  <input type="hidden" name="type_action" value="<?= htmlspecialchars($type_action) ?>">
+  <button type="submit">Exporter CSV</button>
+</form>
+
+<!-- Tableau -->
+<table>
   <tr>
     <th>Date</th>
     <th>Nom du visiteur</th>
@@ -82,38 +88,35 @@ try {
     ");
     $requete->execute($params);
 
-while ($row = $requete->fetch(PDO::FETCH_ASSOC)) {
-    $nom = htmlspecialchars($row['visiteur_prenom'] . ' ' . $row['visiteur_nom']);
-    $date = htmlspecialchars($row['horodatage']);
-    $action = htmlspecialchars($row['type_action']); // déjà 'entrée' ou 'sortie'
+    while ($row = $requete->fetch(PDO::FETCH_ASSOC)) {
+        $nom = htmlspecialchars($row['visiteur_prenom'] . ' ' . $row['visiteur_nom']);
+        $date = htmlspecialchars($row['horodatage']);
+        $action = htmlspecialchars($row['type_action']);
 
-    if ($action === 'sortie') {
-        $motif = 'Sortie';
-        $detail = '-';
-    } elseif (!empty($row['formation_intitule'])) {
-        $motif = "Formation";
-        $detail = htmlspecialchars($row['formation_intitule']);
-    } elseif (!empty($row['personnel_nom'])) {
-        $motif = "Visite";
-        $detail = htmlspecialchars($row['personnel_prenom'] . ' ' . $row['personnel_nom']);
-    } else {
-        $motif = "Inconnu";
-        $detail = "-";
+        if ($action === 'sortie') {
+            $motif = 'Sortie';
+            $detail = '-';
+        } elseif (!empty($row['formation_intitule'])) {
+            $motif = 'Formation';
+            $detail = htmlspecialchars($row['formation_intitule']);
+        } elseif (!empty($row['personnel_nom'])) {
+            $motif = 'Visite';
+            $detail = htmlspecialchars($row['personnel_prenom'] . ' ' . $row['personnel_nom']);
+        } else {
+            $motif = 'Inconnu';
+            $detail = '-';
+        }
+
+        $classe = ($action === 'entrée') ? 'bg-entree' : 'bg-sortie';
+
+        echo "<tr class=\"$classe\">
+                <td>$date</td>
+                <td>$nom</td>
+                <td>" . ucfirst($action) . "</td>
+                <td>$motif</td>
+                <td>$detail</td>
+              </tr>";
     }
-
-    // Classe CSS
-    $classe = ($action === 'entrée') ? 'bg-entree' : 'bg-sortie';
-
-    echo "<tr class='$classe'>
-            <td>$date</td>
-            <td>$nom</td>
-            <td>" . ucfirst($action) . "</td>
-            <td>$motif</td>
-            <td>$detail</td>
-          </tr>";
-}
-
-
 } catch (PDOException $e) {
     echo "<tr><td colspan='5'>Erreur : " . htmlspecialchars($e->getMessage()) . "</td></tr>";
 }
