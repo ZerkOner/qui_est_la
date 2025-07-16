@@ -20,20 +20,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<?php if (isset($erreur)) echo "<p style='color:red;'>$erreur</p>"; ?>
+<link rel="stylesheet" href="/qui_est_la/public/css/login.css">
 
-<?php require_once '../includes/db.php'; ?>
-<?php require_once '../includes/header.php'; ?>
+<div class="login-container">
+    <h2>Connexion administrateur</h2>
 
-<h2>Connexion administrateur</h2>
-<form action="login.php" method="post">
-  <label for="login">Identifiant :</label>
-  <input type="text" name="login" id="login" required>
+    <?php if (isset($erreur)): ?>
+        <p class="erreur"><?= htmlspecialchars($erreur) ?></p>
+    <?php endif; ?>
 
-  <label for="mdp">Mot de passe :</label>
-  <input type="password" name="mdp" id="mdp" required>
+    <form action="login.php" method="post" class="login-form">
+        <label for="login">Identifiant :</label>
+        <input type="text" name="login" id="login" required>
 
-  <button type="submit">Connexion</button>
-</form>
+        <label for="mdp">Mot de passe :</label>
+        <input type="password" name="mdp" id="mdp" required>
+
+        <button type="submit">Connexion</button>
+    </form>
+</div>
 
 <?php require_once '../includes/footer.php'; ?>

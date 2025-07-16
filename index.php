@@ -2,33 +2,16 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<title>Qui est là ? - Pointage</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 20px; }
-  .tabs { display: flex; margin-bottom: 10px; cursor: pointer; }
-  .tab {
-    padding: 10px 20px;
-    background: #eee;
-    border: 1px solid #ccc;
-    border-bottom: none;
-    margin-right: 5px;
-    user-select: none;
-  }
-  .tab.active {
-    background: white;
-    font-weight: bold;
-    border-bottom: 1px solid white;
-  }
-  .tab-content {
-    border: 1px solid #ccc;
-    padding: 15px;
-    display: none;
-  }
-  .tab-content.active { display: block; }
-  label { display: block; margin-top: 10px; }
-  input, select, button { margin-top: 5px; padding: 7px; width: 100%; max-width: 300px; }
-</style>
+  <meta charset="UTF-8" />
+  <title>Qui est là ? - Pointage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="stylesheet" href="/qui_est_la/public/css/index.css">
+  <link rel="manifest" href="/qui_est_la/public/manifest.json">
+<meta name="theme-color" content="#2c3e50" />
+<link rel="apple-touch-icon" href="/qui_est_la/public/icons/icon-192.png">
+
 </head>
 <body>
 
@@ -58,7 +41,7 @@
       <option value="formation">Formation</option>
     </select>
 
-    <div id="personnel-container" style="display:none;">
+    <div id="personnel-container" class="sub-container">
       <label>Personne à rencontrer</label>
       <select name="personnel_id">
         <option value="">-- Aucun --</option>
@@ -71,7 +54,7 @@
       </select>
     </div>
 
-    <div id="formation-container" style="display:none;">
+    <div id="formation-container" class="sub-container">
       <label>Formation</label>
       <select name="formation_id">
         <option value="">-- Aucune --</option>
@@ -84,25 +67,31 @@
       </select>
     </div>
 
-    <button type="submit" style="margin-top:15px;">Valider l'entrée</button>
+    <button type="submit">Valider l'entrée</button>
   </form>
 </div>
 
 <div id="sortie" class="tab-content">
   <h2>Pointage Sortie</h2>
   <form action="traitement_sortie.php" method="post">
-  <label>Identifiant unique (QR code ID)</label>
-  <input type="text" name="qr_code_id">
+    <label>Identifiant unique (QR code ID)</label>
+    <input type="text" name="qr_code_id">
 
-  <label>Ou Email</label>
-  <input type="email" name="email">
+    <label>Ou Email</label>
+    <input type="email" name="email">
 
-  <button type="submit" style="margin-top:15px;">Valider la sortie</button>
-</form>
-
+    <button type="submit">Valider la sortie</button>
+  </form>
 </div>
 
 <script src="public/js/tabs.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/qui_est_la/public/js/sw.js')
+      .then(reg => console.log('Service Worker enregistré', reg))
+      .catch(err => console.error('Erreur SW', err));
+  }
+</script>
 
 </body>
 </html>

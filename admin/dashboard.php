@@ -1,23 +1,26 @@
+<link rel="stylesheet" href="/qui_est_la/public/css/style.css" />
 <?php
 session_start();
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.php");
     exit();
 }
-require_once '../includes/db.php';
-require_once '../includes/header.php';
 ?>
 
-<h1>Tableau de bord administrateur</h1>
+<div class="dashboard-wrapper">
+  <div class="dashboard">
+    <h1><u>Tableau de bord</u></h1>
 
-<nav>
-  <ul>
-    <li><a href="personnels.php">Personnels</a></li>
-    <li><a href="formations.php">Formations</a></li>
-    <li><a href="pointages.php">Pointages</a></li>  <!-- <-- Ajouté ici -->
-    <li><a href="logout.php">Déconnexion</a></li>
-  </ul>
-</nav>
+    <div class="dashboard-grid">
+      <a href="pointages.php" class="dashboard-card"> Voir les pointages <br>🕒</a>
+      <a href="personnels.php" class="dashboard-card"> Gérer le personnel <br>👥</a>
+      <a href="formations.php" class="dashboard-card"> Gérer les formations <br>📅</a>
+    </div>
 
+    <div class="dashboard-bottom">
+      <a href="logout.php" class="dashboard-card logout">Se déconnecter<br>👋</a>
+    </div>
+  </div>
+</div>
 
 <?php require_once '../includes/footer.php'; ?>

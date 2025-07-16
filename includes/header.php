@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>Qui est là ?</title>
-  <link rel="stylesheet" href="public/css/style.css">
-</head>
-<body>
+<header class="admin-header">
+  <a href="/qui_est_la/admin/dashboard.php" class="btn-home" title="Retour au tableau de bord">🏠 Accueil</a>
+</header>
+
