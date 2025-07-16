@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Qui est là ? - Pointage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="stylesheet" href="/qui_est_la/public/css/index.css">
+  <link rel="manifest" href="/qui_est_la/public/manifest.json">
+  <meta name="theme-color" content="#2c3e50" />
+  <link rel="apple-touch-icon" href="/qui_est_la/public/icons/icon-192.png">
+</head>
+<body>
+
+<h1>Bienvenue au système de pointage</h1>
+
+<div class="tabs">
+  <div class="tab active" data-tab="entree">Entrée</div>
+  <div class="tab" data-tab="sortie">Sortie</div>
+</div>
+
+<div id="entree" class="tab-content active">
+  <h2>Pointage Entrée</h2>
+  <form id="form-entree">
+    <label>Nom <sup>*</sup></label>
+    <input type="text" name="nom" required>
+
+    <label>Prénom <sup>*</sup></label>
+    <input type="text" name="prenom" required>
+
+    <label>Email <sup>*</sup></label>
+    <input type="email" name="email" required>
+
+    <label>Objet de la visite <sup>*</sup></label>
+    <select name="objet" id="objet" required>
+      <option value="">-- Choisir --</option>
+      <option value="personnel">Membre du personnel</option>
+      <option value="formation">Formation</option>
+    </select>
+
+    <div id="personnel-container" class="sub-container" style="display:none;">
+      <label>Personne à rencontrer</label>
+      <select name="personnel_id" id="personnel-select">
+        <option value="">-- Aucun --</option>
+      </select>
+    </div>
+
+    <div id="formation-container" class="sub-container" style="display:none;">
+      <label>Formation</label>
+      <select name="formation_id" id="formation-select">
+        <option value="">-- Aucune --</option>
+      </select>
+    </div>
+
+    <button type="submit">Valider l'entrée</button>
+  </form>
+  <div id="entree-message"></div>
+</div>
+
+<div id="sortie" class="tab-content">
+  <h2>Pointage Sortie</h2>
+  <form id="form-sortie">
+    <label>Identifiant unique (QR code ID)</label>
+    <input type="text" name="qr_code_id">
+
+    <label>Ou Email</label>
+    <input type="email" name="email">
+
+    <button type="submit">Valider la sortie</button>
+  </form>
+  <div id="sortie-message"></div>
+</div>
+
+<script src="public/js/tabs.js"></script>
+<script>
+  // Chargement dynamique des personnels et formations via fetch PHP (API)
+  async function loadPersonnels() {
+    const resp = await fetch('/qui_est_la/includes/api_get_personnels.php');
+    const personnels = await resp.json();
+    const select = document.getElementById('personnel-select');
+    personnels.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = p.prenom + ' ' + p.nom;
+      select.appendChild(opt);
+    });
+  }
+
+  async function loadFormations() {
+    const resp = await fetch('/qui_est_la/includes/api_get_formations.php');
+    const formations = await resp.json();
+    const select = document.getElementById('formation-select');
+    formations.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f.id;
+      opt.textContent = f.intitule;
+      select.appendChild(opt);
+    });
+  }
+
+  // Affichage conditionnel des selects selon l'objet visite
+  const objetSelect = document.getElementById('objet');
+  const personnelContainer = document.getElementById('personnel-container');
+  const formationContainer = document.getElementById('formation-container');
+
+  objetSelect.addEventListener('change', () => {
+    if (objetSelect.value === 'personnel') {
+      personnelContainer.style.display = 'block';
+      formationContainer.style.display = 'none';
+    } else if (objetSelect.value === 'formation') {
+      formationContainer.style.display = 'block';
+      personnelContainer.style.display = 'none';
+    } else {
+      formationContainer.style.display = 'none';
+      personnelContainer.style.display = 'none';
+    }
+  });
+
+  // Initial load
+  loadPersonnels();
+  loadFormations();
+
+  // Gestion soumission entrée
+  document.getElementById('form-entree').addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const form = e.target;
+    const data = new FormData(form);
+
+    // Envoi en POST classique (form data) à traitement_entree.php
+    const resp = await fetch('/qui_est_la/traitement_entree.php', {
+      method: 'POST',
+      body: data,
+    });
+
+    const text = await resp.text();
+
+    document.getElementById('entree-message').innerHTML = text;
+    form.reset();
+    personnelContainer.style.display = 'none';
+    formationContainer.style.display = 'none';
+  });
+
+  // Gestion soumission sortie
+  document.getElementById('form-sortie').addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const form = e.target;
+    const data = new FormData(form);
+
+    const resp = await fetch('/qui_est_la/traitement_sortie.php', {
+      method: 'POST',
+      body: data,
+    });
+
+    const text = await resp.text();
+
+    document.getElementById('sortie-message').innerHTML = text;
+    form.reset();
+  });
+
+  // Service worker registration
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/qui_est_la/public/js/sw.js')
+      .then(reg => console.log('Service Worker enregistré', reg))
+      .catch(err => console.error('Erreur SW', err));
+  }
+</script>
+
+</body>
+</html>
