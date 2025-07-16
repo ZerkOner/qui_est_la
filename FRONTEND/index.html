@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <title>Qui est là ? - Pointage</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="/qui_est_la/FRONTEND/index.css">
-  <link rel="manifest" href="/qui_est_la/public/manifest.json">
-  <meta name="theme-color" content="#2c3e50" />
-  <link rel="apple-touch-icon" href="/qui_est_la/public/icons/icon-192.png">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Qui est là ? - Pointage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="stylesheet" href="index.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c3e50" />
+    <link rel="apple-touch-icon" href="icons/android-chrome-192x192.png">
+  </head>
+  <body>
+  <script src="tabs.js"></script>
 
 <h1>Bienvenue au système de pointage</h1>
 
@@ -72,12 +73,10 @@
   <div id="sortie-message"></div>
 </div>
 
-<script src="public/js/tabs.js"></script>
 <script>
   // Chargement dynamique des personnels et formations via fetch PHP (API)
   async function loadPersonnels() {
-    const resp = await fetch('/qui_est_la/includes/api_get_personnels.php');
-    const personnels = await resp.json();
+    const resp = await fetch('https://TON_BACKEND_URL/includes/api_get_personnels.php');    const personnels = await resp.json();
     const select = document.getElementById('personnel-select');
     personnels.forEach(p => {
       const opt = document.createElement('option');
@@ -88,7 +87,7 @@
   }
 
   async function loadFormations() {
-    const resp = await fetch('/qui_est_la/includes/api_get_formations.php');
+    const resp = await fetch('https://TON_BACKEND_URL/includes/api_get_formations.php');
     const formations = await resp.json();
     const select = document.getElementById('formation-select');
     formations.forEach(f => {
@@ -162,7 +161,7 @@
 
   // Service worker registration
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/qui_est_la/public/js/sw.js')
+    navigator.serviceWorker.register('sw.js')
       .then(reg => console.log('Service Worker enregistré', reg))
       .catch(err => console.error('Erreur SW', err));
   }
