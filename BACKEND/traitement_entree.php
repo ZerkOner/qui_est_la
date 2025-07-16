@@ -1,10 +1,17 @@
 <?php
 require_once 'includes/db.php';
 
-// 1. Sécurité : la méthode doit être POST
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    die("Méthode non autorisée.");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    exit(0);
 }
+
+// Traitement POST formulaire entrée ici
+// Exemple : récupérer $_POST['nom'], $_POST['prenom'], etc.
+// Valider les données, insérer en base, renvoyer un message
 
 // 2. Champs obligatoires
 if (

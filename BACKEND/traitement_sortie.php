@@ -1,9 +1,17 @@
 <?php
 require_once 'includes/db.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    die("Méthode non autorisée.");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    exit(0);
 }
+
+// Traitement POST formulaire sortie ici
+// Exemple : récupérer $_POST['qr_code_id'], $_POST['email'], etc.
+// Valider les données, modifier en base, renvoyer un message
 
 // Récupération des données
 $qr_code_id = isset($_POST['qr_code_id']) ? trim($_POST['qr_code_id']) : '';
